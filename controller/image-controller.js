@@ -1,5 +1,4 @@
 import grid from "gridfs-stream";
-import { GridFSBucket } from "mongodb";
 import mongoose from "mongoose";
 
 const url = "http://localhost:8000";
@@ -21,14 +20,27 @@ export const uploadFile = async (request, response) => {
     return response.status(404).json("file not found");
   }
   const imageUrl = `${url}/file/${request.file.filename}`;
-  return response.json(200).json(imageUrl);
+  return response.status(200).json(imageUrl);
 };
 export const getImage = async (request, response) => {
   try {
     const file = await gfs.files.findOne({ filename: request.params.filename });
     const readStream = gridFsBucket.openDownloadStream(file._id);
+    console.log("file: " + file);
     readStream.pipe(response);
   } catch (error) {
     response.status(500).json({ msg: err.message });
   }
 };
+
+// export const getImage = async (request, response) => {
+//   try {
+//       const file = await gfs.files.findOne({ filename: request.params.filename });
+//       // const readStream = gfs.createReadStream(file.filename);
+//       // readStream.pipe(response);
+//       const readStream = gridfsBucket.openDownloadStream(file._id);
+//       readStream.pipe(response);
+//   } catch (error) {
+//       response.status(500).json({ msg: error.message });
+//   }
+// }
